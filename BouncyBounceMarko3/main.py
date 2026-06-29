@@ -28,7 +28,7 @@ class StartWindow(QWidget):
         self.Folder = Path('Assets/Images/')
         self.images = [fuh for fuh in self.Folder.iterdir() if fuh.is_file()]
         self.ImAges = []
-        # self.StartApp(self.speed, self.num, self.rows, self.image, self.sound, self.colour, self.Bounce, self.sizeX, self.sizeY, self.WinsizeX, self.WinsizeY)
+
         for i in range(len(self.images)):
             self.ImAges.append(self.images[i].stem)
         self.ImAges.sort()
@@ -38,7 +38,22 @@ class StartWindow(QWidget):
             print("you on a windows dawg")
 
 
-        self.sound="Bok"
+        self.Folder2 = Path('Assets/Sound/')
+        self.sounds = [fuh for fuh in self.Folder2.iterdir() if fuh.is_file()]
+        self.So = []
+        
+        for i in range(len(self.sounds)):
+            self.So.append(self.sounds[i].stem)
+        self.So.sort()
+        try:
+            self.So.remove(".DS_Store")
+            
+        except:
+            print("you on a windows dawg")
+        self.SoUnds = ["None"] + self.So
+        print(self.SoUnds)
+
+
         self.colour=""
         self.thing = None
         self.MakeBoxes()
@@ -64,6 +79,7 @@ class StartWindow(QWidget):
         self.preview = QLabel()
         #self.preview.setFixedSize(50,50)
         self.preview.pixmap().scaled(50, 50)
+
         self.openFolder = QPushButton("OpenFolder")
         self.openFolder.clicked.connect(self.OpenFinder)
 
@@ -98,6 +114,8 @@ class StartWindow(QWidget):
         self.preview.pixmap().scaled(50, 50)
         self.imageBox.currentTextChanged.connect(self.Cooper)
 
+        self.soundBox.addItems(list(self.SoUnds))
+
         self.sizeXBox.valueChanged.connect(self.hersonX)
         self.sizeYBox.valueChanged.connect(self.hersonY)
 
@@ -128,7 +146,15 @@ class StartWindow(QWidget):
         self.preview.setPixmap(scaled)
     def RestartApp(self):
         self.newWindow = StartWindow()
+        try:
+            for i in range(len(self.thing.Labels)):
+                self.thing.Labels[i].deleteLater()
+            self.thing.deleteLater()
+        except:
+            print("hi")
+
         self.close()
+
         
 
     def Henry(self):
@@ -142,17 +168,22 @@ class StartWindow(QWidget):
     def SetLayout(self):
         self.layout = QVBoxLayout()
         self.layout.setAlignment(Qt.AlignmentFlag.AlignTop)
-        self.layout.addWidget(QLabel("yo🤑🤑🤑"))
-        self.layout.addWidget(QLabel("Choose yo settings Dawgchach!!"))
+        #self.layout.addWidget(QLabel("yo🤑🤑🤑"))
+        self.layout.addWidget(QLabel("Choose yo settings !"))
+        self.layout.addWidget(QLabel("*Restart program if new files added*"))
 
-        self.layout.addWidget(QLabel("Choose image:"))
-        self.layout.addWidget(QLabel("*Restart program if add new images"))
+        self.layout.addWidget(QLabel("Choose image and sound:"))
+        
         self.spoon = QHBoxLayout()
-        self.spoon.addWidget(self.openFolder)
         self.spoon.addWidget(self.imageBox)
         self.spoon.addWidget(self.preview)
 
-        self.layout.addLayout(self.spoon)v. asdasdsdasdasdwasd
+        self.layout.addLayout(self.spoon)
+
+        self.poon = QHBoxLayout()
+        self.poon.addWidget(self.openFolder)
+        self.poon.addWidget(self.soundBox)
+        self.layout.addLayout(self.poon)
 
         self.layout.addWidget(QLabel("How many?"))
         self.layout.addWidget(self.numBox)
@@ -179,6 +210,7 @@ class StartWindow(QWidget):
 
     def StartApp(self):
         self.image = self.imageBox.currentText()
+        self.sound = self.soundBox.currentText()
         self.speed = self.speedBox.value()
         self.Bounce = self.BounceBox.isChecked()
         self.sizeX = self.sizeXBox.value()
@@ -206,9 +238,7 @@ class Thingalings(QObject):
         self.speed = Speed
         self.Image =image
         self.screen = QApplication.primaryScreen().size()
-        # self.sound = QSoundEffect()
-        # self.sound.setSource(f"Assets/{sound}.wav")
-        # self.sound.setVolume(0.5)
+        self.sound = sound
         self.timers = []
         self.Labels = []
         self.Bounce = Bounce
@@ -240,7 +270,7 @@ class Thingalings(QObject):
     def LabellingItFrFr(self):
         for i in range(self.numThingies):
             self.Labels.append(
-                Boingaloings(self, self.speed,f"Assets/Images/{self.Image}.png", "", self.targetWidth, self.targetHeight,i)
+                Boingaloings(self, self.speed,f"Assets/Images/{self.Image}.png", self.sound, self.targetWidth, self.targetHeight,i)
             )
     def UpdateFAAHHHHHHIHATETHISIMGOINGINSANEIJUSTCOMPLETELUREMADETHISPROJECTWITHNEARLYNOCHANEGDS(self):
         for obj in self.Labels:
@@ -278,6 +308,8 @@ class Thingalings(QObject):
 
         Eh.move(Eh.X, Eh.Y)
         Bee.move(Bee.X, Bee.Y)
+        Eh.sound.play()
+
     def UpdateAll(self):
         for lbl in self.Labels:
             lbl.close()
@@ -294,9 +326,9 @@ class Boingaloings(QWidget):
         self.speeds = [-self.speed, self.speed]
         self.screen = QApplication.primaryScreen().size()
         self.Image = image
-        #self.sound = QSoundEffect()
-        #self.sound.setSource(f"Assets/{sound}.wav")
-        #self.sound.setVolume(0.5)
+        self.sound = QSoundEffect()
+        self.sound.setSource(QUrl.fromLocalFile(f"Assets/Sound/{sound}.wav"))
+        self.sound.setVolume(1)
         self.targetWidth = sizeX
         self.targetHeight = sizeY
         self.Num = j
@@ -409,12 +441,14 @@ class Boingaloings(QWidget):
             self.LabelResetPos()
         elif self.X <= 0 or self.X >= self.screen.width() - self.width():
             self.DirX *= -1
+            self.sound.play()
 
         if self.Y < 34 - self.speed or self.Y > self.screen.height() - self.height() + self.speed - 1:
             self.LabelResetPos()
         elif self.Y < 35 or self.Y >= self.screen.height() - self.height():
             self.DirY *= -1
-        #self.label.move(self.X, self.Y)
+            self.sound.play()
+        
         self.move(self.X,self.Y)
 
 
