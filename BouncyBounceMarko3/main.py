@@ -2,8 +2,8 @@ import sys
 import os
 from pathlib import Path
 
-from pynput import keyboard
-from pynput.keyboard import Key
+#from pynput import keyboard
+#from pynput.keyboard import Key
 import random
 from PyQt6.QtCore import Qt, QTimer, QObject
 from PyQt6.QtGui import QPixmap, QPainter
@@ -35,7 +35,7 @@ class StartWindow(QWidget):
         try:
             self.ImAges.remove(".DS_Store")
         except:
-            print("you on a windows dawg")
+            print("you on a windows dawg (or gentoo :)")
 
 
         self.Folder2 = Path('Assets/Sound/')
@@ -100,7 +100,7 @@ class StartWindow(QWidget):
         self.numBox.setMaximum(101)
 
         self.speedBox.setMinimum(1)
-        self.speedBox.setMaximum(10)
+        self.speedBox.setMaximum(100)
         self.speedBox.setValue(3)
         self.Henry()
         self.sizeXBox.setValue(self.screen.width() // 5)
@@ -453,7 +453,7 @@ class Boingaloings(QWidget):
 
 
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = StartWindow()
-    sys.exit(app.exec())
+
+app = QApplication(sys.argv)
+window = StartWindow()
+sys.exit(app.exec())
