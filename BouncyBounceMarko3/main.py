@@ -15,6 +15,15 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import QUrl
 from PyQt6.QtGui import QDesktopServices
 
+# ─── PYINSTALLER PATH FIX FUNCTION ───
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
+
 #add herobrine
 
 class StartWindow(QWidget):
@@ -25,7 +34,7 @@ class StartWindow(QWidget):
         self.setFixedSize(500,500)
         self.setWindowTitle("BounceyBounce")
 
-        self.Folder = Path('Assets/Images/')
+        self.Folder = Path(resource_path('Assets/Images/'))
         self.images = [fuh for fuh in self.Folder.iterdir() if fuh.is_file()]
         self.ImAges = []
 
@@ -38,7 +47,7 @@ class StartWindow(QWidget):
             print("you on a windows dawg (or gentoo :)")
 
 
-        self.Folder2 = Path('Assets/Sound/')
+        self.Folder2 = Path(resource_path('Assets/Sound/'))
         self.sounds = [fuh for fuh in self.Folder2.iterdir() if fuh.is_file()]
         self.So = []
         
@@ -120,7 +129,7 @@ class StartWindow(QWidget):
         self.sizeYBox.valueChanged.connect(self.hersonY)
 
     def Cooper(self):
-        pixmap = QPixmap(f"Assets/Images/{self.imageBox.currentText()}.png")
+        pixmap = QPixmap(resource_path(f"Assets/Images/{self.imageBox.currentText()}.png"))
         scaled = pixmap.scaled(
             self.sizeXBox.value() //5,
             self.sizeYBox.value() //5,
@@ -131,14 +140,14 @@ class StartWindow(QWidget):
         QDesktopServices.openUrl(QUrl.fromLocalFile(str(self.Folder.resolve())))
 
     def hersonX(self):
-        pixmap = QPixmap(f"Assets/Images/{self.imageBox.currentText()}.png")
+        pixmap = QPixmap(resource_path(f"Assets/Images/{self.imageBox.currentText()}.png"))
         scaled = pixmap.scaled(
             self.sizeXBox.value() // 5,
             self.sizeYBox.value() // 5,
         )
         self.preview.setPixmap(scaled)
     def hersonY(self):
-        pixmap = QPixmap(f"Assets/Images/{self.imageBox.currentText()}.png")
+        pixmap = QPixmap(resource_path(f"Assets/Images/{self.imageBox.currentText()}.png"))
         scaled = pixmap.scaled(
             self.sizeXBox.value() // 5,
             self.sizeYBox.value() // 5,
@@ -231,7 +240,6 @@ class StartWindow(QWidget):
             nums=self.nums
 
         )
-
 class Thingalings(QObject):
     def __init__(self, Speed, image, sound, Bounce, sizeX, sizeY, nums):
         super().__init__()
@@ -443,11 +451,21 @@ class Boingaloings(QWidget):
             self.DirX *= -1
             self.sound.play()
 
-        if self.Y < 34 - self.speed or self.Y > self.screen.height() - self.height() + self.speed - 1:
+        if self.Y < 0 - self.speed or self.Y > self.screen.height() - self.height() + self.speed - 1:
             self.LabelResetPos()
-        elif self.Y < 35 or self.Y >= self.screen.height() - self.height():
+        elif self.Y < 1 or self.Y >= self.screen.height() - self.height():
             self.DirY *= -1
             self.sound.play()
+
+        if self.X == 0 and self.Y == 1:
+            self.papa.Labels.append(Boingaloings(self.papa, self.papa.speed,f"Assets/Images/Allen.png", self.papa.sound, self.papa.targetWidth, self.papa.targetHeight, len(self.papa.Labels)+1))
+        elif self.X == self.screen.width()-self.width() and self.y == 0:
+            self.papa.Labels.append(Boingaloings(self.papa, self.papa.speed,f"Assets/Images/Allen.png", self.papa.sound, self.papa.targetWidth, self.papa.targetHeight, len(self.papa.Labels)+1))
+        elif self.X == 0 and self.y == self.screen.height()-self.height(): 
+            self.papa.Labels.append(Boingaloings(self.papa, self.papa.speed,f"Assets/Images/Allen.png", self.papa.sound, self.papa.targetWidth, self.papa.targetHeight, len(self.papa.Labels)+1))
+        elif self.X == self.screen.width()-self.width() and self.y == self.screen.height()-self.height():
+            self.papa.Labels.append(Boingaloings(self.papa, self.papa.speed,f"Assets/Images/Allen.png", self.papa.sound, self.papa.targetWidth, self.papa.targetHeight, len(self.papa.Labels)+1))
+
         
         self.move(self.X,self.Y)
 
